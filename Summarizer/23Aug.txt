@@ -1,0 +1,27 @@
+**Overview and Course Context**
+
+* **Session Focus**: The class marks the start of an in-depth module on the Model Context Protocol (MCP) developed by Anthropic, planned across 3–4 sessions to cover building custom MCP servers, clients, and package distribution before returning to LangChain projects.
+* **Revision of Core Concepts**: Mayank recapped the difference between runtime state (mutable and persistent across turns when using a thread ID and memory saver) and runtime context (non-persistent dependency injection supplied freshly per agent invocation).
+
+**The Problem MCP Solves**
+
+* **Limitations of Standalone LLMs**: Early LLMs functioned strictly as text predictors and reasoning "brains" capable of drafting text or code, but incapable of executing actions or taking real-world steps.
+* **Function Calling & Scaling Issues**: While function calling allowed models to invoke custom API tools, scaling this across multiple enterprise projects created massive maintenance overhead, redundant codebases, security challenges, and breaking changes whenever APIs updated.
+* **Standardized Solution**: MCP shifts tool creation and maintenance from individual applications to standardized, reusable MCP servers that any AI client can query and execute uniformly.
+
+**MCP Architecture & Primitives**
+
+* **Three Primitives**: MCP exposes three core building blocks to AI models: **Tools** (executable actions), **Resources** (structured data/context), and **Prompts** (specialized prompt templates).
+* **Core Components**:
+* **Host**: The surrounding runtime application (e.g., Claude Desktop, VS Code, LangChain agents).
+* **Client**: The internal layer initiated by the host to connect, discover schema, and manage JSON-RPC communications with MCP servers.
+* **Server**: The service hosting the tools, resources, and endpoints (either locally or remotely).
+
+
+* **Transport Layers**: MCP supports standard input/output (`stdio`) for local process communication and Streamable HTTP for remote connections (with legacy HTTP + SSE being deprecated).
+
+**Key Q&A Insights**
+
+* **Tool Schema Overhead**: Connecting multiple MCP servers can bloat prompt tokens on startup because all available tool schemas are retrieved; middleware or client-side interceptors can be used to dynamically filter which tools reach the LLM.
+* **Authentication and Access Control**: MCP servers can enforce role-based access control (RBAC) and OAuth/JWT tokens, dynamically filtering returned tool lists based on authenticated scopes.
+* **Adoption Decision**: Simple single-purpose applications can rely on standard API functions, but organizations seeking reusable, multi-agent, or cross-platform tool ecosystems benefit from standardizing on MCP servers.

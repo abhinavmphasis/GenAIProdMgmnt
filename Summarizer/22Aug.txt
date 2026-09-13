@@ -1,0 +1,49 @@
+**Announcements & Logistics**
+
+* **Job Referral**: Shared remote Senior AI Engineer opportunities (minimum 4–5+ years experience, 20+ LPA) with direct referrals.
+* **Mesh API**: Advised signing up on Mesh API to access multiple model endpoints with pooled student credits.
+* **Schedule & Roadmap**: September 26 confirmed as a holiday. The curriculum will cover Model Context Protocol (MCP) in-depth across at least 3 classes before moving to a GCP-based project, multi-agent systems, LangGraph, and RAG.
+
+---
+
+**Agent State vs. Agent Runtime**
+
+* **Agent State**: A typed dictionary managing execution context, holding the conversation history (`messages`) and custom variables. It is mutable and persists across conversation turns.
+* **Agent Runtime**: LangChain's agent runtime runs on LangGraph under the hood. It manages static/background execution context across 5 components:
+* **Context**: Static metadata (user ID, session locations, credentials).
+* **Store**: Long-term persistent memory across distinct sessions (e.g., `InMemoryStore`, PostgreSQL).
+* **Stream Writer**: Streaming channel for custom progress updates.
+* **Execution Info**: Run-level metadata (Thread ID, Run ID, retry attempt counts).
+* **Server Info**: Metadata for runs executed on LangGraph Server.
+
+
+
+---
+
+**Passing & Accessing Runtime Across Components**
+
+* **Tools**: Access runtime data using the `tool_runtime` parameter to inspect context or query long-term stores.
+* **Node-Style Middleware Hooks**: Automatically receive `(state, runtime)` as arguments.
+* **Wrap-Style Middleware Hooks**: Receive a request object (`ModelRequest` or `ToolCallRequest`) containing runtime and state references.
+
+---
+
+**Human-in-the-Loop (HITL)**
+
+* **Interrupt Mechanism**: Pauses agent execution during tool execution or sensitive operations using checkpoints (`InMemorySaver`) and specific `thread_id` configs.
+* **Four Resume Command Types**:
+* **Approve**: Confirms execution of the pending tool call.
+* **Edit**: Modifies the tool arguments before executing.
+* **Reject**: Aborts tool execution with explanatory feedback.
+* **Respond**: Directly feeds human textual answers back into conversational tools without triggering tool calls.
+
+
+* **Conditional Interrupts**: Can dynamically pause execution using predicate functions (e.g., intercepting `ToolCallRequest` only when transaction amount exceeds a threshold).
+
+---
+
+**Q&A Takeaways**
+
+* **Middleware Execution Order**: Retries (`tool_retry`) precede error handling (`tool_error`) so that retries execute prior to formatting exceptions.
+* **LangChain vs. LangGraph**: LangChain provides high-level agent wrappers, whereas LangGraph offers granular graph-level control over nodes, edges, states, and conditional branching.
+* **Context Token Optimization**: Minimize prompt bloat by pruning historical messages and loading long-term memory/tools dynamically based on semantic necessity rather than full history dumping.

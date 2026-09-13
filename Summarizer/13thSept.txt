@@ -1,0 +1,34 @@
+13th September 2026 (MCP Practicals)
+Core Agenda & Concepts Covered
+
+Claude Desktop Integration Methods: Connecting MCP servers to clients like Claude Desktop occurs either via remote connectors (HTTP URLs) or local configuration files (claude_desktop_config.json / mcp.json using STDIO transport).
+
+Local Server Configuration: Local STDIO servers require the full executable path (e.g., path to uv via which uv) within the configuration JSON to run subprocesses reliably upon launching Claude Desktop.
+
+MCP Inspector: Used as an independent client interface (npx @modelcontextprotocol/inspector) to debug, test JSON-RPC 2.0 requests, and inspect tools, resources, and prompts.
+
+Time Tracker Project Architecture
+
+Database Layer (database.py): SQLite implementation handling schema initialization (time_entries table with fields for employee, project, date, hours, description), seed data, and data access functions.
+
+REST API Layer (FastAPI): Exposes REST endpoints (/api/entries, /api/projects, /api/timesheet, /api/projects/{project}/summary) with automatic Swagger UI documentation at /docs.
+
+Frontend Web Interface: Static UI files (index.html, style.css, app.js) enabling users to submit billable hours and review project summaries.
+
+Converting Applications to MCP Servers
+
+Explicit Tool Definition (Recommended): Defining tools explicitly via @mcp.tool and @mcp.prompt decorators allows customized descriptions, parameter validations, and compound actions without altering production REST APIs.
+
+Automated Tool Generation: FastMCP.from_fastapi(app) automatically extracts FastAPI endpoints and registers them as MCP tools.
+
+Prompt Templates: Structured MCP prompts (e.g., generate_weekly_report) guide LLMs to dynamically retrieve relevant timesheet data and format reports.
+
+Deployment & Architectural Highlights
+
+Remote Deployment: MCP servers can be hosted on cloud infrastructure or platforms like Horizon (FastMCP Cloud / Prefect) using HTTP/SSE or Streamable HTTP transport for global access.
+
+Communication & Transport: STDIO transport runs the MCP server locally as a subprocess of the host/client, while HTTP endpoints expose streamable routes for remote clients.
+
+Authentication: Token verification, JWTs, and OAuth providers can be configured at the server level to restrict unauthorized tool invocations.
+
+LLM Sampling: MCP protocol supports bidirectional interactions where the server can request LLM inferences from the connected client.

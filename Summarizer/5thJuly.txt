@@ -1,0 +1,42 @@
+**Core Concepts & Foundations**
+
+* **Large Language Models (LLMs):** LLMs generate output by calculating statistical token probabilities to predict the next word in a sequence based on training patterns rather than fact lookup tables.
+* **Tokens & Economics:** Text is divided into tokens, which serve as the primary unit of measurement and cost. Output tokens are priced significantly higher than input tokens because generating responses requires active computation and reasoning steps.
+* **Vector Embeddings:** Natural language processing (NLP) technique converting text into numerical coordinates in multidimensional space to capture semantic similarity.
+* **Model Parameters:** Internal weights and values tuned during pre-training that determine the model's learning capacity and reasoning performance.
+
+---
+
+**Web Platforms vs. APIs**
+
+* **Web Interfaces (Buffet Model):** Subscription-based platforms (e.g., ChatGPT, Claude) that bundle system prompts, session memory, and tool integration into a rate-limited user experience.
+* **APIs (À La Carte Model):** Direct developer interfaces billed per individual token. Calls are completely stateless, requiring developers to handle memory storage and data passing explicitly.
+
+---
+
+**Context Windows & Stateless Execution**
+
+* **Statelessness:** Models have no native memory of previous interactions; every chat exchange requires resending the conversation history and system instructions to maintain conversational context.
+* **Context Consumption:** As conversation history grows, token consumption scales linearly per message. Reaching the model's context window limit causes earlier messages to fall out of memory, slowing response times and increasing costs.
+* **Context Optimization:** Token consumption is mitigated by starting new sessions, branching chats, or using LLMs to compress and summarize historical context.
+
+---
+
+**Anatomy of an AI Agent**
+
+* **Architecture:** An AI Agent is defined as **Brain (LLM) + Memory (State/Database) + Tools (External APIs/Capabilities)**.
+* **Execution Flow:**
+1. The user request and conversation history are retrieved from database storage.
+2. The LLM receives the prompt alongside available tool definitions and descriptions.
+3. The model determines whether external tools (e.g., Tavily web search, calculators) are needed and selects arguments.
+4. The agent orchestrator executes the tool call, returns the raw data to the LLM for synthesis, and writes updated interactions to persistent memory.
+
+
+
+---
+
+**Industry Implementation & Q&A Takeaways**
+
+* **Framework Uniformity:** Agent frameworks (LangChain, CrewAI, LangGraph) operate on identical primitives: orchestrating prompt assembly, tool dispatching, model invocation, and state management.
+* **Cost Estimation:** Enterprise AI costs are projected by calculating total request volume against average input tokens, history retention strategies, and output generation caps.
+* **Evaluation & Telemetry:** Multi-step agent accuracy and routing decisions are measured through observability platforms (e.g., AgentOps, Langfuse) and "LLM-as-a-Judge" evaluation pipelines.

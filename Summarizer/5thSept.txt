@@ -1,0 +1,33 @@
+5th Sept 
+
+**Core MCP Architecture**
+
+* **Host, Client, and Server Model**: The host application (such as Claude Desktop, VS Code, or Cursor) never communicates directly with an MCP server. Instead, the host spins up dedicated MCP clients to interact with external servers.
+* **1:1 Relationship**: Each MCP server connects to a dedicated client. This 1:1 mapping ensures scalability, parallel execution across different services, and security isolation where each connection maintains its own authentication state.
+
+**The Three MCP Primitives**
+
+* **Tools**: Executable actions the model can invoke (e.g., sending an email or creating a GitHub issue). Handled via `tools/list` (discovering tool schemas) and `tools/call` (invoking the tool).
+* **Resources**: Read-only, static or near-static contextual data (e.g., database schemas, documentation, PDFs) accessed by the AI. Managed via `resources/list`, `resources/read`, `resources/templates/list`, and `resources/subscribe` to listen for updates.
+* **Prompts**: Parameterized, reusable templates provided by the server to guide the model on how to best perform structured workflows consistently. Handled via `prompts/list` and `prompts/get`.
+
+**Data Layer & Protocol (JSON-RPC 2.0)**
+
+* **Communication Format**: MCP uses JSON-RPC 2.0 as its message protocol.
+* **Advantages Over REST**: JSON-RPC 2.0 is lightweight without unnecessary headers, transport-agnostic (works over STDIO and HTTP), supports asynchronous requests via matching IDs, and allows bidirectional messaging (servers can send requests or notifications to clients).
+
+**Connection Lifecycle & Handshake**
+
+* **Three Lifecycle Stages**: Every MCP connection follows Initialization, Operation, and Shutdown.
+* **Initialization Steps**:
+1. *Client Request*: The client sends an `initialize` request specifying protocol version, capabilities, and client metadata with an ID.
+2. *Server Response*: The server responds with matching ID, supported protocol version, capabilities, and server info.
+3. *Client Confirmation*: The client sends an `initialized` notification (with no ID expected back) to complete the handshake.
+
+
+* **Version Negotiation**: Client and server exchange their latest supported versions. If versions are incompatible with no common fallback, the connection immediately disconnects.
+
+**Key Practical Takeaways**
+
+* Host applications maintain local connection logs (e.g., Claude Desktop log files) that track raw JSON-RPC requests, version handshakes, and initialization states.
+* MCP abstracts custom API integrations from an $N \times M$ complexity down to a unified $N + M$ protocol ecosystem across LLM tools.

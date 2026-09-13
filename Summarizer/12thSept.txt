@@ -1,0 +1,54 @@
+12th Sept 2026(MCP)
+Class Agenda & Announcements
+
+Session Focus: Detailed breakdown of the Model Context Protocol (MCP) transport layer, graceful shutdown mechanics, and hands-on implementation using FastMCP.
+
+Roadmap: Upcoming topics include LangChain integration with MCP, multi-agent systems, and a financial credit-risk project hosted on GCP.
+
+Logistics: Class on September 26th is scheduled as a holiday due to travel.
+
+MCP Transport Layer
+
+STDIO (Standard Input/Output):
+
+The client launches the MCP server locally as a direct child sub-process.
+
+Communication occurs via standard input (stdin) and standard output (stdout), leaving stderr for logging.
+
+Offers high speed, security, and zero-configuration transport with no network overhead, but is restricted to local execution on the same machine.
+
+Streamable HTTP:
+
+Replaces the deprecated HTTP with Server-Sent Events (SSE) setup to enable remote MCP servers over networks.
+
+Typically exposes an endpoint (such as /mcp) to handle POST requests carrying JSON-RPC 2.0 payloads.
+
+Supports standard HTTP authorization methods like API keys and OAuth.
+
+Shutdown Phase Mechanisms
+
+Transport-Driven Termination: No JSON-RPC messages are exchanged during shutdown; connection closing is entirely managed by the transport layer.
+
+STDIO Teardown: Predominantly client-initiated by closing stdin, issuing a SIGTERM signal, or as a last resort, sending SIGKILL (server-initiated exit via closing stdout is rare).
+
+HTTP Teardown: Concluded directly by closing the client connection or handling unexpected server drops with reconnection logic.
+
+Practical Implementation & Tooling
+
+FastMCP vs. Legacy SDK:
+
+The original Anthropic Python SDK required verbose, low-level route handling and schema definitions.
+
+FastMCP (authored by Jeremy Lovin of Prefect) introduced clean decorators (@mcp.tool, @mcp.resource, @mcp.prompt) and has since been folded into the official SDK.
+
+Recipe Box Server Demo: Created an example server exposing tools (list_recipes, get_recipe, search_recipes), a resource (valid_tags), and a prompt template (plan_weekly_meals).
+
+Inspection Tools: Utilized MCP Jam and the official MCP Inspector to monitor handshakes, capability negotiations, and tool execution logs.
+
+Key Q&A Discussions
+
+MCP Primitives: Tools perform executable agent actions, Resources supply structured reference context (e.g., valid tags, documentation), and Prompts provide reusable, grounded prompt templates.
+
+Enterprise Application: Wrapping enterprise microservice APIs into an MCP server simplifies tool exposure and maintenance for downstream AI agents.
+
+Career Advice: Transitioning to product-based companies and practicing core coding/system design fundamentals were recommended for senior AI and engineering roles.
